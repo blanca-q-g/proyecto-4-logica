@@ -54,7 +54,7 @@ SubProceso Llenar_Matriz(Matriz_Competencia Por Referencia, Vector_Participantes
 			Para j=0 Hasta CantPart-1 Hacer
 				
 				Puntos=Aleatorio(0,10);
-				Matriz_Competencia[i,j]=Puntos;
+				Matriz_Competencia[i,j]=ConvertirATexto(Puntos);
 				Vector_Participantes[j]=j+1;
 				
 				Si i=CantRondas-1 Y j=CantPart-1 Entonces
@@ -90,12 +90,12 @@ Subproceso Reporte_Puntuaciones(Matriz_Competencia Por Referencia, Vector_Partic
 			Para k=0 Hasta CantRondas-1 Hacer
 				Para l=0 Hasta CantPart-1 Hacer
 					
-					Si Matriz_Competencia[i,j] > Matriz_Competencia[k,l] Entonces
-						Aux=Matriz_Competencia[i,j];
+					Si ConvertirANumero(Matriz_Competencia[i,j]) > ConvertirANumero(Matriz_Competencia[k,l]) Entonces
+						Aux=ConvertirANumero(Matriz_Competencia[i,j]);
 						AuxParticipante=Vector_Participantes[j];
 						Matriz_Competencia[i,j]=Matriz_Competencia[k,l];
 						Vector_Participantes[j]=l;
-						Matriz_Competencia[k,l]=Aux;
+						Matriz_Competencia[k,l]=ConvertirATexto(Aux);
 						Vector_Participantes[l]=AuxParticipante;
 					FinSi
 				
@@ -112,7 +112,7 @@ Subproceso Reporte_Puntuaciones(Matriz_Competencia Por Referencia, Vector_Partic
 		Si ReporteDeRonda < CantRondas-1 Entonces
 			ReporteDeRonda = ReporteDeRonda+1;
 			
-			Escribir "Ejecutando la Ronda ", ReporteDeRonda+1;
+			Escribir "Ejecutando la Ronda ", ReporteDeRonda;
 			Escribir " ";
 			Escribir "Resultado de esta ronda";
 			
@@ -153,12 +153,11 @@ Funcion Consulta_Puntuaciones(Matriz_Competencia Por Referencia, Vector_Particip
 		Si RondaConsulta<>0 Entonces
 			
 			Para j=0 Hasta CantPart-1 Hacer
-					Participantes = Concatenar(Participantes,Concatenar(, Concatenar("P", convertirATexto(j+1)))); 
-					PuntosCaracter = Concatenar(PuntosCaracter,Concatenar(, convertirATexto(Matriz_Competencia[RondaConsulta,j]))); 
+					Participantes = Concatenar(Participantes,Concatenar(" ", Concatenar("P", convertirATexto(j+1)))); 
+					PuntosCaracter = Concatenar(PuntosCaracter,Concatenar("  ", (Matriz_Competencia[RondaConsulta-1,j]))); 
 			FinPara
 				
 			Escribir Participantes;
-			Escribir "	"			;		
 			Escribir "-----------------------------------------------------------------------------------------";
 			Escribir PuntosCaracter;
 			Escribir "-----------------------------------------------------------------------------------------";
@@ -166,41 +165,50 @@ Funcion Consulta_Puntuaciones(Matriz_Competencia Por Referencia, Vector_Particip
 			Esperar Tecla;
 				
 				
-			Si RondaConsulta < CantRondas-1 Entonces
-				Para i=0 Hasta CantRondas-1 Hacer
-					Para j=0 Hasta CantPart-1 Hacer
-						Para k=0 Hasta CantRondas-1 Hacer
-							Para l=0 Hasta CantPart-1 Hacer
-									
-								Si Matriz_Competencia[i,j] < Matriz_Competencia[k,l] Entonces
-									Aux=Matriz_Competencia[i,j];
-									AuxParticipante=Vector_Participantes[j];
-									Matriz_Competencia[i,j]=Matriz_Competencia[k,l];
-									Vector_Participantes[j]=l;
-									Matriz_Competencia[k,l]=Aux;
-									Vector_Participantes[l]=AuxParticipante;
-								FinSi
-									
-							FinPara
+		Si RondaConsulta = CantRondas-1 Entonces
+			Para i=0 Hasta CantRondas-1 Hacer
+				Para j=0 Hasta CantPart-1 Hacer
+					Para k=0 Hasta CantRondas-1 Hacer
+						Para l=0 Hasta CantPart-1 Hacer
+								
+							Si ConvertirANumero(Matriz_Competencia[i,j]) < ConvertirANumero(Matriz_Competencia[k,l]) Entonces
+								Aux=ConvertirANumero(Matriz_Competencia[i,j]);
+								AuxParticipante=Vector_Participantes[j];
+								Matriz_Competencia[i,j]=Matriz_Competencia[k,l];
+								Vector_Participantes[j]=l;
+								Matriz_Competencia[k,l]=ConvertirATexto(Aux);
+								Vector_Participantes[l]=AuxParticipante;
+							FinSi
+								
 						FinPara
 					FinPara
 				FinPara
-				
-				Escribir "";
-				
-			FinSi
-				
+			FinPara
+			
+			Escribir "";
+			Para i=0 Hasta CantRondas-1 Hacer
+			Para j=0 Hasta CantPart-1 Hacer
+				Si j<=1 Entonces
+					Matriz_Competencia[i,j]="PE";
+				FinSi
+			FinPara
+			FinPara
+			
+			
+		FinSi
+		
+		
 		SiNo 
 			Escribir "Si no desea confirmar puntuaciones, digite ENTER.";
 			Esperar Tecla;
 		FinSi
 			
-		SiNo
-			Escribir "Debe de Inicializar los puntajes (opción 1) para elegir esta opción.";
-			Escribir "Digite Enter para volver al menú.";
-			Esperar Tecla;
-		FinSi
-		
+	SiNo
+		Escribir "Debe de Inicializar los puntajes (opción 1) para elegir esta opción.";
+		Escribir "Digite Enter para volver al menú.";
+		Esperar Tecla;
+	FinSi
+	
 FinFuncion
 
 // OpciónMenú4. Función para el reporte de toda la competencia
@@ -258,7 +266,7 @@ Algoritmo Comite_deportes
 
 		
 	//Declaración matriz
-	Definir Matriz_Competencia Como Entero;
+	Definir Matriz_Competencia Como Caracter;
 	
 	//Declaración matrizz participantes
 	Definir Vector_Participantes Como Entero;
@@ -318,7 +326,7 @@ Algoritmo Comite_deportes
 			Inicio_Matriz(EsPrimeraVez, CantRondas, CantPart);
 			
 			Dimension Matriz_Competencia[CantRondas, CantPart];
-			Matriz_Competencia[0, 0]=99;
+			Matriz_Competencia[0, 0]=ConvertirATexto(99);
 			
 			Dimension Vector_Participantes[CantPart];
 			Vector_Participantes[0]=0;
