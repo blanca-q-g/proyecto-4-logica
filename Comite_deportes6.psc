@@ -42,17 +42,13 @@ FinSubProceso
 
 // OpciónMenú2. Función para almacenar puntuaciones en matriz
 
-SubProceso Llenar_Matriz(Matriz_Competencia Por Referencia, EsPrimeraVez Por Referencia, RondasFinalizadas Por Referencia, CantRondas Por Referencia, CantPart Por Referencia)
+SubProceso Llenar_Matriz(Matriz_Competencia Por Referencia, Vector_Participantes Por Referencia, EsPrimeraVez Por Referencia, RondasFinalizadas Por Referencia, CantRondas Por Referencia, CantPart Por Referencia)
 	
 	Definir i,j,k Como Entero;
 	Definir Puntos Como Entero;
-	//Definir Competencias Como Entero;
+	Definir GenerarReporte Como Logico;
 	
-	//Dimension Competencias[CantRondas, CantPart];
-	//Competencias=Matriz_Competencia;
-	
-	Escribir "2.1.Matriz: ", Matriz_Competencia[0,0];
-
+	GenerarReporte=Falso;
 	
 	Si EsPrimeraVez=Verdadero Entonces;
 		RondasFinalizadas=Falso;
@@ -61,30 +57,71 @@ SubProceso Llenar_Matriz(Matriz_Competencia Por Referencia, EsPrimeraVez Por Ref
 		
 		Para i=0 Hasta CantRondas-1 Hacer
 			Para j=0 Hasta CantPart-1 Hacer
+				
 				Puntos=Aleatorio(0,10);
-				Escribir "Puntitos, ", Puntos;
-				Escribir "2. Rondas ", i;
-				Escribir "3. participantes ", j;
 				Matriz_Competencia[i,j]=Puntos;
+				Vector_Participantes[j]=j+1;
+				
+				Si i=CantRondas-1 Y j=CantPart-1 Entonces
+					GenerarReporte=Verdadero;
+				FinSi
+				
 			FinPara
+			
 		FinPara
-				
-		Escribir "";
-				
-				Escribir "Ejecutando la Ronda ", i+1;
-				Escribir " ";
-				Escribir "Resultado de esta ronda";
-				Escribir "Posición ", " Competidor ", CantPart, " Puntos ", Puntos;
+		
+		Si GenerarReporte=Verdadero Entonces 
+			Reporte_Puntuaciones(Matriz_Competencia, Vector_Participantes, CantPart, CantRondas);
+		FinSi
 		
 	SiNo
 		Escribir "Debe de Inicializar los puntajes (opción 1) para elegir esta opción.";
 		Escribir "Digite Enter para volver al menú.";
 		Esperar Tecla;
 	FinSi
-	
-	
 FinSubproceso
 	
+Subproceso Reporte_Puntuaciones(Matriz_Competencia Por Referencia, Vector_Participantes Por Referencia, CantPart Por Referencia, CantRondas Por Referencia)
+	
+	Definir i, j, k, l, Aux, AuxParticipante Como Entero;
+	Definir Puntos Como Entero;
+	
+	Puntos=0;
+	
+	Para i=0 Hasta CantRondas-1 Hacer
+		Para j=0 Hasta CantPart-1 Hacer
+			Para k=0 Hasta CantRondas-1 Hacer
+				Para l=0 Hasta CantPart-1 Hacer
+					
+					Si Matriz_Competencia[i,j]>Matriz_Competencia[k,l] Entonces
+						Aux=Matriz_Competencia[i,j];
+						AuxParticipante=Vector_Participantes[j];
+						Matriz_Competencia[i,j]=Matriz_Competencia[k,l];
+						Vector_Participantes[j]=l;
+						Matriz_Competencia[k,l]=Aux;
+						Vector_Participantes[l]=AuxParticipante;
+					
+					FinSi
+				
+				FinPara
+			FinPara
+		FinPara
+	FinPara
+	
+	Para i=0 Hasta CantRondas-1 Hacer
+		
+		Escribir "";
+		Escribir "Ejecutando la Ronda ", i+1;
+		Escribir " ";
+		Escribir "Resultado de esta ronda";
+		
+		Para j=0 Hasta CantPart-1 Hacer
+			Escribir "Posición ", j+1, " Competidor ", Vector_Participantes[j]+1, " Puntos ", Matriz_Competencia[i,j];
+		FinPara
+	FinPara
+	
+FinSubProceso
+
 
 
 // OpciónMenú3. Función consulta puntuaciones
@@ -190,6 +227,8 @@ Algoritmo Comite_deportes
 	//Declaración matriz
 	Definir Matriz_Competencia Como Entero;
 	
+	//Declaración matrizz participantes
+	Definir Vector_Participantes Como Entero;
 	
 	//Inicialización de variables
 	
@@ -247,9 +286,12 @@ Algoritmo Comite_deportes
 			Dimension Matriz_Competencia[CantRondas, CantPart];
 			Matriz_Competencia[0, 0]=99;
 			
+			Dimension Vector_Participantes[CantPart];
+			Vector_Participantes[0]=0;
+			
 		2: // Llenado de la Matriz_Competencia
 			
-			Llenar_Matriz(Matriz_Competencia, EsPrimeraVez, RondasFinalizadas, CantRondas, CantPart);
+			Llenar_Matriz(Matriz_Competencia, Vector_Participantes, EsPrimeraVez, RondasFinalizadas, CantRondas, CantPart);
 			
 		3: // Consulta de puntuaciones de una ronda
 			
